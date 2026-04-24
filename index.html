@@ -124,7 +124,7 @@
     </div>
 
     <div class="word-display" id="wordDisplay">
-      APPLE
+      Ready?
     </div>
 
     <input
@@ -254,8 +254,51 @@
     }
 
     wordInput.addEventListener("input", () => {
-      if (!gameStarted) return;
+      wordInput.addEventListener("keydown", (e) => {
+  if (!gameStarted) return;
 
+  // Allow special keys
+  const allowedKeys = [
+    "Backspace",
+    "Delete",
+    "ArrowLeft",
+    "ArrowRight",
+    "Tab",
+    "Shift",
+    "Control",
+    "Alt",
+    "Enter"
+  ];
+
+  if (allowedKeys.includes(e.key)) return;
+
+  // Only check normal letter keys
+  if (e.key.length === 1) {
+    const currentInput = wordInput.value.toLowerCase();
+    const expectedLetter = currentWord[currentInput.length];
+
+    // If wrong letter → block typing
+    if (e.key.toLowerCase() !== expectedLetter) {
+      e.preventDefault(); // stops wrong letter
+
+      messageDisplay.textContent = "❌ Wrong letter! Try again!";
+      return;
+    }
+  }
+
+      // Small delay so the typed letter enters first
+      setTimeout(() => {
+        if (wordInput.value.toLowerCase() === currentWord) {
+          score++;
+          scoreDisplay.textContent = score;
+          messageDisplay.textContent = "🎉 Correct!";
+
+          wordInput.value = "";
+          showNewWord();
+        }
+      }, 10);
+    });
+	
       if (wordInput.value.toLowerCase() === currentWord) {
         score++;
         scoreDisplay.textContent = score;
