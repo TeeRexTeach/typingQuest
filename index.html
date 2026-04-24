@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word Rush</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Comic Sans MS', 'Poppins', sans-serif;
+      background: #EAF6FF;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .game-container {
+      background: white;
+      width: 500px;
+      max-width: 90%;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #4A90E2;
+      font-size: 36px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      background: #FFF8DC;
+      padding: 15px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .word-display {
+      background: #F9F9F9;
+      border: 3px dashed #A0D8EF;
+      border-radius: 20px;
+      padding: 40px 20px;
+      font-size: 48px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 80%;
+      padding: 15px;
+      font-size: 20px;
+      border: 2px solid #A0D8EF;
+      border-radius: 15px;
+      outline: none;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input:focus {
+      border-color: #4A90E2;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+
+    .start-btn {
+      background: #7ED957;
+      color: white;
+    }
+
+    .restart-btn {
+      background: #FFB347;
+      color: white;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    .message {
+      min-height: 30px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #4A90E2;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="game-container">
+    <h1>🌈 Word Rush 🌈</h1>
+    <p class="subtitle">Type the word as fast as you can!</p>
+
+    <div class="stats">
+      <div>⭐ Score: <span id="score">0</span></div>
+      <div>⏰ Time: <span id="time">60</span>s</div>
+    </div>
+
+    <div class="word-display" id="wordDisplay">
+      APPLE
+    </div>
+
+    <input
+      type="text"
+      id="wordInput"
+      placeholder="Type the word here..."
+      autocomplete="off"
+    >
+
+    <div class="buttons">
+      <button class="start-btn" onclick="startGame()">🟢 Start Game</button>
+      <button class="restart-btn" onclick="restartGame()">🔁 Restart</button>
+    </div>
+
+    <div class="message" id="message">
+      🎉 Great job! Keep going!
+    </div>
+  </div>
+
+  <script>
+    const words = [
+      "apple",
+      "banana",
+      "orange",
+      "grape",
+      "school",
+      "teacher",
+      "computer",
+      "holiday",
+      "beautiful",
+      "friend"
+    ];
+
+    let currentWord = "";
+    let score = 0;
+    let time = 60;
+    let timer;
+    let gameStarted = false;
+
+    const wordDisplay = document.getElementById("wordDisplay");
+    const wordInput = document.getElementById("wordInput");
+    const scoreDisplay = document.getElementById("score");
+    const timeDisplay = document.getElementById("time");
+    const messageDisplay = document.getElementById("message");
+
+    function getRandomWord() {
+      return words[Math.floor(Math.random() * words.length)];
+    }
+
+    function showNewWord() {
+      currentWord = getRandomWord();
+      wordDisplay.textContent = currentWord.toUpperCase();
+    }
+
+    function startGame() {
+      if (gameStarted) return;
+
+      gameStarted = true;
+      score = 0;
+      time = 60;
+
+      scoreDisplay.textContent = score;
+      timeDisplay.textContent = time;
+      messageDisplay.textContent = "🔥 Game Started!";
+      wordInput.value = "";
+      wordInput.focus();
+
+      showNewWord();
+
+      timer = setInterval(() => {
+        time--;
+        timeDisplay.textContent = time;
+
+        if (time <= 0) {
+          endGame();
+        }
+      }, 1000);
+    }
+
+    function restartGame() {
+      clearInterval(timer);
+      gameStarted = false;
+      startGame();
+    }
+
+    function endGame() {
+      clearInterval(timer);
+      gameStarted = false;
+      messageDisplay.textContent = `🏆 Game Over! Final Score: ${score}`;
+      wordDisplay.textContent = "FINISHED!";
+    }
+
+    wordInput.addEventListener("input", () => {
+      if (!gameStarted) return;
+
+      if (wordInput.value.toLowerCase() === currentWord) {
+        score++;
+        scoreDisplay.textContent = score;
+        messageDisplay.textContent = "🎉 Correct!";
+        wordInput.value = "";
+        showNewWord();
+      }
+    });
+  </script>
+
+</body>
+</html>
