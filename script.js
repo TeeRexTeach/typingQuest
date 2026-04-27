@@ -68,7 +68,11 @@ function startGame() {
   scoreDisplay.textContent = score;
   timeDisplay.textContent = time;
   messageDisplay.textContent = "🔥 Game Started!";
+
   wordInput.value = "";
+  
+  // SHOW input box when game starts
+  wordInput.style.display = "block";
   wordInput.focus();
 
   // Hide mode selector when game starts
@@ -100,6 +104,9 @@ function endGame() {
   messageDisplay.textContent = `🏆 Game Over! Final Score: ${score}`;
   wordDisplay.textContent = `🏆 Game Over! Final Score: ${score}`;
   wordInput.value = "";
+
+  // HIDE input box when game ends
+  wordInput.style.display = "none";
 
   // Show mode selector again
   document.querySelector(".mode-select").style.display = "flex";
