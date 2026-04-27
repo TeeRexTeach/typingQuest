@@ -110,6 +110,63 @@
       font-weight: bold;
       color: #4A90E2;
     }
+    
+    .keyboard-toggle {
+  margin-bottom: 15px;
+}
+
+.toggle-btn {
+  background: #4A90E2;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.toggle-btn:hover {
+  transform: scale(1.05);
+}
+.keyboard {
+  display: none;
+  margin-bottom: 20px;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.key {
+  width: 45px;
+  height: 45px;
+  background: #f0f0f0;
+  border: 2px solid #A0D8EF;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.2s;
+}
+
+.key.wrong {
+  background: #FF6B6B;
+  color: white;
+  transform: scale(1.1);
+}
+
+.key.active {
+  background: #4A90E2;
+  color: white;
+  transform: scale(1.1);
+}
   </style>
 </head>
 <body>
@@ -133,6 +190,48 @@
       placeholder="Type the word here..."
       autocomplete="off"
     >
+    <div class="keyboard-toggle">
+  <button id="toggleKeyboardBtn" class="toggle-btn">
+    ⌨️ Show Keyboard
+  </button>
+</div>
+
+<div class="keyboard" id="keyboard">
+  <div class="keyboard-row">
+    <div class="key" data-key="q">Q</div>
+    <div class="key" data-key="w">W</div>
+    <div class="key" data-key="e">E</div>
+    <div class="key" data-key="r">R</div>
+    <div class="key" data-key="t">T</div>
+    <div class="key" data-key="y">Y</div>
+    <div class="key" data-key="u">U</div>
+    <div class="key" data-key="i">I</div>
+    <div class="key" data-key="o">O</div>
+    <div class="key" data-key="p">P</div>
+  </div>
+
+  <div class="keyboard-row">
+    <div class="key" data-key="a">A</div>
+    <div class="key" data-key="s">S</div>
+    <div class="key" data-key="d">D</div>
+    <div class="key" data-key="f">F</div>
+    <div class="key" data-key="g">G</div>
+    <div class="key" data-key="h">H</div>
+    <div class="key" data-key="j">J</div>
+    <div class="key" data-key="k">K</div>
+    <div class="key" data-key="l">L</div>
+  </div>
+
+  <div class="keyboard-row">
+    <div class="key" data-key="z">Z</div>
+    <div class="key" data-key="x">X</div>
+    <div class="key" data-key="c">C</div>
+    <div class="key" data-key="v">V</div>
+    <div class="key" data-key="b">B</div>
+    <div class="key" data-key="n">N</div>
+    <div class="key" data-key="m">M</div>
+  </div>
+</div>
 
     <div class="buttons">
       <button class="start-btn" onclick="startGame()">🟢 Start Game</button>
@@ -145,6 +244,9 @@
   </div>
 
   <script>
+const correctSound = new Audio(
+  "https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
+);
     const words = [
       // "apple",
       // "banana",
@@ -255,6 +357,20 @@
 
     wordInput.addEventListener("input", () => {
       wordInput.addEventListener("keydown", (e) => {
+if (e.key.length === 1) {
+  const currentInput = wordInput.value.toLowerCase();
+  const expectedLetter = currentWord[currentInput.length];
+
+  if (e.key.toLowerCase() !== expectedLetter) {
+    e.preventDefault();
+
+    highlightKey(e.key, false); // red for wrong key
+    messageDisplay.textContent = "❌ Wrong letter! Try again!";
+    return;
+  } else {
+    highlightKey(e.key, true); // blue for correct key
+  }
+}
   if (!gameStarted) return;
 
   // Allow special keys
@@ -289,6 +405,8 @@
       // Small delay so the typed letter enters first
       setTimeout(() => {
         if (wordInput.value.toLowerCase() === currentWord) {
+        correctSound.currentTime = 0;
+correctSound.play();
           score++;
           scoreDisplay.textContent = score;
           messageDisplay.textContent = "🎉 Correct!";
@@ -300,6 +418,8 @@
     });
 	
       if (wordInput.value.toLowerCase() === currentWord) {
+      correctSound.currentTime = 0;
+correctSound.play();
         score++;
         scoreDisplay.textContent = score;
         messageDisplay.textContent = "🎉 Correct!";
@@ -307,6 +427,46 @@
         showNewWord();
       }
     });
+    
+   const toggleKeyboardBtn = document.getElementById("toggleKeyboardBtn");
+const keyboard = document.getElementById("keyboard");
+const allKeys = document.querySelectorAll(".key");
+
+let keyboardVisible = false;
+
+// Toggle keyboard button
+toggleKeyboardBtn.addEventListener("click", () => {
+  keyboardVisible = !keyboardVisible;
+
+  if (keyboardVisible) {
+    keyboard.style.display = "block";
+    toggleKeyboardBtn.textContent = "⌨️ Hide Keyboard";
+  } else {
+    keyboard.style.display = "none";
+    toggleKeyboardBtn.textContent = "⌨️ Show Keyboard";
+  }
+});
+
+// Highlight pressed key
+function highlightKey(letter, isCorrect = true) {
+  // Remove old highlights
+  allKeys.forEach(key => {
+    key.classList.remove("active");
+    key.classList.remove("wrong");
+  });
+
+  const targetKey = document.querySelector(
+    `.key[data-key="${letter.toLowerCase()}"]`
+  );
+
+  if (targetKey) {
+    if (isCorrect) {
+      targetKey.classList.add("active"); // blue
+    } else {
+      targetKey.classList.add("wrong"); // red
+    }
+  }
+}
   </script>
 
 </body>
